@@ -14,7 +14,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'    # or 'zulu', 'adopt', etc.
+          distribution: 'temurin'
           java-version: '11'
 
       - name: Build with Maven
@@ -24,7 +24,11 @@ jobs:
         run: mvn org.owasp:dependency-check-maven:check
 
       - name: Docker Build
-        run: docker build -t ${{ github.repository }} .
+        run: |
+          IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t $IMAGE_NAME .
 
       - name: Docker Scan
-        run: docker scan ${{ github.repository }}
+        run: |
+          IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker scan $IMAGE_NAME
